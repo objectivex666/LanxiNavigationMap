@@ -7,7 +7,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <meta name="color-scheme" content="light">
-<title>🚇 地铁出行路线规划</title>
+<title>兰溪铁路出行路线规划</title>
+<!--🚇 -->
 <style>
 /* Hallmark · genre: modern-minimal · theme: cobalt · accent: electric cobalt oklch(58% 0.20 256)
  * macrostructure: Workbench × Map-Diagram · designed as an instrument panel, not a dashboard
@@ -360,7 +361,7 @@ footer {
     <div class="brand">
       <span class="mark">M</span>
       <div>
-        <h1>地铁出行路线规划</h1>
+        <h1>兰溪铁路出行路线规划</h1>
         <div class="sub">模块化地图解析 · 换乘规划 · 耗时估算</div>
       </div>
     </div>
@@ -463,7 +464,7 @@ footer {
 
 <script>
 /* ================================================================
- *  地铁出行路线规划 —— 模块化架构
+ *  兰溪铁路出行路线规划 —— 模块化架构
  *  ----------------------------------------------------------------
  *  1) MapParser   : 解析任意符合格式的地图 JSON → 内部数据模型
  *  2) Graph/Path  : 构建含换乘代价的线路图，Dijkstra 求最优路径
@@ -2233,7 +2234,7 @@ async function populateMapSelect() {
     opt.textContent = raw.name || DEFAULT_MAP_PATH;
     els.mapSelect.appendChild(opt);
     els.mapSelect.value = '__default__';
-    setStatus('✅ 已加载默认地图「' + (raw.name || 'intercitymap') + '」', '#16a34a');
+    setStatus('✅ 已加载默认地图「' + (raw.name || '城际地图') + '」', '#16a34a');
     return;
   }
   setStatus('⚠️ 未能自动加载默认地图，请使用上方路径输入框或「导入地图文件」手动加载', '#d97706');
