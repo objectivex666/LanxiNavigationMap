@@ -105,6 +105,17 @@ select {
 }
 select:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-soft); }
 
+/* ---------- 路径 / URL 加载地图 ---------- */
+.path-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.path-row input {
+  font: inherit; font-size: 13px; color: var(--color-ink);
+  border: 1px solid var(--color-rule-2); border-radius: var(--radius-sm);
+  padding: 7px 10px; background: var(--color-paper); outline: none;
+  width: min(300px, 38vw); min-width: 120px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.path-row input:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-soft); }
+
 /* 确保 hidden 属性始终生效（避免被 .btn 等 display 规则覆盖） */
 [hidden] { display: none !important; }
 
@@ -357,6 +368,11 @@ footer {
       <label class="select-label" for="mapSelect" hidden>地图</label>
       <select id="mapSelect" hidden></select>
       <button class="btn ghost" id="importBtn" hidden>导入地图文件</button>
+      <!-- 路径/URL 加载地图：当前隐藏，代码保留；需要时去掉 hidden 即可显示 -->
+      <div class="path-row" hidden>
+        <input type="text" id="mapPathInput" placeholder="地图路径 / URL（绝对路径、根相对路径、http(s)）" autocomplete="off" spellcheck="false">
+        <button class="btn ghost kbd-btn" id="pathLoadBtn">加载</button>
+      </div>
       <button class="btn ghost kbd-btn" id="paletteBtn" hidden title="命令面板（Ctrl/⌘ + K）"><span class="kbd">⌘K</span></button>
       <button class="btn ghost" id="resetBtn" hidden>重置</button>
     </div>
@@ -420,13 +436,19 @@ footer {
     </aside>
   </main>
 
-  <footer>
+  <!--<footer>
     <span>模块化地图解析 · Dijkstra 最短路径 + 换乘优化</span>
     <span>纯 HTML/JS · 任意浏览器运行</span>
-  </footer>
+  </footer>-->
 </div>
 
 <input type="file" id="fileInput" accept=".json,application/json" hidden>
+
+<!-- 内嵌默认地图副本：file:// 直开时浏览器会拦截 fetch 本地文件（如 Edge/Chrome），
+     此处作为回退数据源，保证任何浏览器直接打开 index.html 都能加载默认地图 -->
+<script type="application/json" id="embedded-map">
+{"svgViewBoxZoom":74.08182206817074,"svgViewBoxMin":{"x":-910.7576536837641,"y":288.66045604595524},"images":[],"graph":{"options":{"type":"directed","multi":true,"allowSelfLoops":true},"attributes":{},"nodes":[{"key":"stn_tEpSYHdsh9","attributes":{"visible":true,"zIndex":0,"x":-25,"y":75,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["原山","Yuanshan"],"nameOffsetX":"left","nameOffsetY":"middle","secondaryNames":["",""],"interchange":true}}},{"key":"stn_5eoBzmy-ql","attributes":{"visible":true,"zIndex":0,"x":0,"y":300,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["滨港","Bingang"],"nameOffsetX":"left","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_Vi89JEQUX1","attributes":{"visible":true,"zIndex":0,"x":0,"y":-125,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["科蓝东","Kelan East"],"nameOffsetX":"left","nameOffsetY":"top","secondaryNames":["",""],"interchange":true}}},{"key":"stn_8MYf0CijRR","attributes":{"visible":true,"zIndex":0,"x":0,"y":-250,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["望山塔","Wangshan Tower"],"nameOffsetX":"left","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_fQTDuAomAF","attributes":{"visible":true,"zIndex":0,"x":250,"y":-425,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["青冶行","Qingyehang"],"nameOffsetX":"left","nameOffsetY":"top","secondaryNames":["",""],"interchange":true}}},{"key":"stn_PUmR1FC3ka","attributes":{"visible":true,"zIndex":0,"x":375,"y":-475,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["锦绣川","Jinxiuchuan"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":true}}},{"key":"stn_JcvaNKj6Ro","attributes":{"visible":true,"zIndex":0,"x":125,"y":-150,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["新圳机场","Xinzhen Airport"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":true}}},{"key":"stn__luPFOMBwa","attributes":{"visible":true,"zIndex":0,"x":-375,"y":-125,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["冰原机场","KBY Airport"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":true}}},{"key":"misc_node_qSEkjlZ2Nm","attributes":{"visible":true,"zIndex":0,"x":-345,"y":-155,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["机场联络磁浮","Airport Connecting Maglev"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_iy8uJCPyTE","attributes":{"visible":true,"zIndex":0,"x":-275,"y":-25,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["西山景区","Xishan Scenic Area"],"nameOffsetX":"middle","nameOffsetY":"bottom","secondaryNames":["",""],"interchange":false}}},{"key":"stn_46iR6Bfove","attributes":{"visible":true,"zIndex":0,"x":-175,"y":-25,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["闫千户","Yanqianhu"],"nameOffsetX":"middle","nameOffsetY":"bottom","secondaryNames":["",""],"interchange":true}}},{"key":"misc_node_a-zw4V3u6-","attributes":{"visible":true,"zIndex":0,"x":-920,"y":-135,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["西原线","WestPlain Express"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_oMEO0mD2Lo","attributes":{"visible":true,"zIndex":0,"x":125,"y":-25,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["沿江","Yanjiang"],"nameOffsetX":"left","nameOffsetY":"bottom","secondaryNames":["",""],"interchange":true}}},{"key":"stn_wl6mVtP5oC","attributes":{"visible":true,"zIndex":0,"x":250,"y":-25,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["沿江东","Yanjiang East"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":false}}},{"key":"stn_mp4alWl-Hn","attributes":{"visible":true,"zIndex":0,"x":250,"y":75,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["化杨新区","Huayang New Area"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_G_14V-VKbw","attributes":{"visible":true,"zIndex":0,"x":350,"y":125,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["新芬河","Xinfenhe"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":false}}},{"key":"stn_l_mUDYH6_P","attributes":{"visible":true,"zIndex":0,"x":500,"y":125,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["河口","Hekou"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":true}}},{"key":"misc_node_3t0CABVAMx","attributes":{"visible":true,"zIndex":0,"x":-20,"y":310,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L1线","Intercity Line 1"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_VPXdlHANm5","attributes":{"visible":true,"zIndex":0,"x":-195,"y":5,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L2线","Intercity Line 2"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_5AGZGRZlQW","attributes":{"visible":true,"zIndex":0,"x":-195,"y":30,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["西原线","WestPlain Express"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_RQE5_hJy52","attributes":{"visible":true,"zIndex":0,"x":390,"y":-465,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L1线","Intercity Line 1"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node___EwSJAjay","attributes":{"visible":true,"zIndex":0,"x":515,"y":135,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L2线","Intercity Line 2"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_7E9PsdfV8F","attributes":{"visible":true,"zIndex":0,"x":70,"y":160,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["陈光快线","Chenguang Express"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_IkGkaoU9Tx","attributes":{"visible":true,"zIndex":0,"x":375,"y":-25,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["西大街","West Street"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":false}}},{"key":"stn_k-H7IT7eAe","attributes":{"visible":true,"zIndex":0,"x":450,"y":-25,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["东海岸","East Coach"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":false}}},{"key":"stn_PWkKoGG-78","attributes":{"visible":true,"zIndex":0,"x":500,"y":0,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["枫漓新村","Fengli Xincun"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":true}}},{"key":"stn_CrBEZVh-FG","attributes":{"visible":true,"zIndex":0,"x":500,"y":75,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["枫漓新村南","Fengli Xincun South"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"misc_node___zb8292N5","attributes":{"visible":true,"zIndex":0,"x":515,"y":160,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L2A线","Intercity Line 2A"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_AUOxcn7IUJ","attributes":{"visible":true,"zIndex":0,"x":515,"y":10,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L5线","Intercity Line 5"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_kRPOnFaHx_","attributes":{"visible":true,"zIndex":0,"x":475,"y":-175,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["白湖机场","BHA Airport"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_4-klomzJhu","attributes":{"visible":true,"zIndex":0,"x":550,"y":-700,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["兰原东","Lanyuan East"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":true}}},{"key":"stn_86IWvp0I2u","attributes":{"visible":true,"zIndex":0,"x":550,"y":-475,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["永安东站","Yong'an East Railway Station"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"misc_node_DgySY9TWsi","attributes":{"visible":true,"zIndex":0,"x":195,"y":-810,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L7线","Intercity Line 7"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_T-VWzxOura","attributes":{"visible":true,"zIndex":0,"x":250,"y":-825,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["兰原薛阳","Lanyuan Xueyang"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":true}}},{"key":"stn_iT-22NVDOc","attributes":{"visible":true,"zIndex":0,"x":675,"y":-200,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["东湾交通枢纽","Dongwan Transit Hub"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_Ssp2pQQUKH","attributes":{"visible":true,"zIndex":0,"x":700,"y":0,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["合庆","Heqing"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_uR2Z_655DP","attributes":{"visible":true,"zIndex":0,"x":700,"y":125,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["江林机场","JLA Airport"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"misc_node_8JbHtT4mP5","attributes":{"visible":true,"zIndex":0,"x":675,"y":135,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L7线","Intercity Line 7"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_eQ0CGcxIYT","attributes":{"visible":true,"zIndex":0,"x":425,"y":175,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["冬州","Dongzhou"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_Zu6q2VOkW0","attributes":{"visible":true,"zIndex":0,"x":250,"y":200,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["东叶原","Dongyeyuan"],"nameOffsetX":"middle","nameOffsetY":"bottom","secondaryNames":["",""],"interchange":false}}},{"key":"stn_RdF6YjWgm8","attributes":{"visible":true,"zIndex":0,"x":-25,"y":200,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["夏秋","Xiaqiu"],"nameOffsetX":"middle","nameOffsetY":"bottom","secondaryNames":["",""],"interchange":true}}},{"key":"stn_Tw1CsRAxQd","attributes":{"visible":true,"zIndex":0,"x":-175,"y":175,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["新双桥","Shin-Shuangqiao"],"nameOffsetX":"middle","nameOffsetY":"bottom","secondaryNames":["",""],"interchange":false}}},{"key":"misc_node_sZf3T62g8X","attributes":{"visible":true,"zIndex":0,"x":515,"y":185,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L3线","Intercity Line 3"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_CSLCoTF-E4","attributes":{"visible":true,"zIndex":0,"x":-240,"y":165,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L3线","Intercity Line 3"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_0oR5Seud2J","attributes":{"visible":true,"zIndex":0,"x":-525,"y":-125,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["新庄","XinZhuang"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":false}}},{"key":"misc_node_m_yOR_Bias","attributes":{"visible":true,"zIndex":0,"x":140,"y":-130,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["机场联络磁浮","Airport Connecting Maglev"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_CrdOYcEvwN","attributes":{"visible":true,"zIndex":0,"x":-600,"y":-125,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["常青港","ChaQin"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":true}}},{"key":"stn_Dy5F3WC6EQ","attributes":{"visible":true,"zIndex":0,"x":-875,"y":-125,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["海岸","HaiAn"],"nameOffsetX":"middle","nameOffsetY":"top","secondaryNames":["",""],"interchange":false}}},{"key":"stn_4H815PiMj1","attributes":{"visible":true,"zIndex":0,"x":-400,"y":300,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["江州北","Jiangzhou North"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_dUy-2_eS-l","attributes":{"visible":true,"zIndex":0,"x":-400,"y":650,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["江州","Jiangzhou"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"misc_node_OYwdeMjeC_","attributes":{"visible":true,"zIndex":0,"x":-420,"y":660,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["江港线","JiangGang Express"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_EDdJ3xZDqx","attributes":{"visible":true,"zIndex":0,"x":-660,"y":-155,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["江港线","JiangGang Express"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_Y4RN4RwZVc","attributes":{"visible":true,"zIndex":0,"x":35,"y":-20,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L2A线","Intercity Line 2A"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_7P2RZ4WHyI","attributes":{"visible":true,"zIndex":0,"x":10,"y":-155,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["陈光快线","Chenguang Express"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_9D1fKpW5kI","attributes":{"visible":true,"zIndex":0,"x":55,"y":75,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["陈莹","Chenying"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":true}}},{"key":"stn_Uo0ymOLOP0","attributes":{"visible":true,"zIndex":0,"x":25,"y":175,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["康岭","Hone Leng"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":true}}},{"key":"misc_node_y6ZUZ0zHKh","attributes":{"visible":true,"zIndex":0,"x":40,"y":5,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L6线","Intercity Line 6"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"stn_s5mSwu_MzM","attributes":{"visible":true,"zIndex":0,"x":300,"y":-550,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["永安商务区","Yongan Business District"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_LK0w4NCmN-","attributes":{"visible":true,"zIndex":0,"x":300,"y":-650,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["兰溪交通大学","Lanxi Traffic University"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"stn_DmAmYhghxk","attributes":{"visible":true,"zIndex":0,"x":250,"y":-750,"type":"guangdong-intercity-rwy","guangdong-intercity-rwy":{"names":["北川原","Boreal Flowreach"],"nameOffsetX":"right","nameOffsetY":"middle","secondaryNames":["",""],"interchange":false}}},{"key":"misc_node_bcCMDdcw8f","attributes":{"visible":true,"zIndex":0,"x":195,"y":-835,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L6线","Intercity Line 6"],"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"misc_node_cU4JaVU4aO","attributes":{"visible":true,"zIndex":0,"x":785,"y":125,"type":"facilities","facilities":{"type":"airport_guangzhou"}}},{"key":"misc_node_ah93U4ismz","attributes":{"visible":true,"zIndex":0,"x":560,"y":-175,"type":"facilities","facilities":{"type":"airport_guangzhou"}}},{"key":"misc_node_RdHeHagl2v","attributes":{"visible":true,"zIndex":0,"x":210,"y":-150,"type":"facilities","facilities":{"type":"airport_guangzhou"}}},{"key":"misc_node_1edBUCQrNi","attributes":{"visible":true,"zIndex":0,"x":-420,"y":-145,"type":"facilities","facilities":{"type":"airport_guangzhou"}}},{"key":"misc_node_aRE7GfyM3Z","attributes":{"visible":true,"zIndex":0,"x":290,"y":-845,"type":"facilities","facilities":{"type":"airport_guangzhou"}}},{"key":"misc_node_K3-K8j2RpL","attributes":{"visible":true,"zIndex":0,"x":565,"y":-690,"type":"gd-intercity-rwy-line-badge","gd-intercity-rwy-line-badge":{"names":["城际L5线","Intercity Line 5"],"color":["guangzhou","ir","#2559a8","#fff"]}}}],"edges":[{"key":"line_xkhaF5NInH","source":"stn_tEpSYHdsh9","target":"stn_Vi89JEQUX1","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_QQuNSG-xIc","source":"stn_Vi89JEQUX1","target":"stn_8MYf0CijRR","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_V4XKNbEkdb","source":"stn_PUmR1FC3ka","target":"stn_fQTDuAomAF","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_zdKCwJ1I7w","source":"stn_5eoBzmy-ql","target":"stn_Vi89JEQUX1","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_RUKQEnkvdG","source":"stn_Vi89JEQUX1","target":"stn_JcvaNKj6Ro","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_bI8JIAnCSp","source":"stn_Vi89JEQUX1","target":"stn__luPFOMBwa","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_gACosqM-LE","source":"stn__luPFOMBwa","target":"stn_iy8uJCPyTE","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_q3yaDxzfwL","source":"stn_iy8uJCPyTE","target":"stn_46iR6Bfove","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_dKrItPgfpq","source":"stn_46iR6Bfove","target":"stn_oMEO0mD2Lo","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_u7gbLk-qdB","source":"stn_oMEO0mD2Lo","target":"stn_mp4alWl-Hn","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_mJg1DIcDY0","source":"stn_G_14V-VKbw","target":"stn_mp4alWl-Hn","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_n29g5dFzHt","source":"stn_oMEO0mD2Lo","target":"stn_wl6mVtP5oC","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_QpjY730F0C","source":"stn_G_14V-VKbw","target":"stn_l_mUDYH6_P","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_pLNHRUjym5","source":"stn_wl6mVtP5oC","target":"stn_IkGkaoU9Tx","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","reconcileId":"","parallelIndex":-1,"gd-intercity-rwy":{"color":["guangzhou","ir","#2559a8","#fff"]}}},{"key":"line_yMZCw5mv_o","source":"stn_IkGkaoU9Tx","target":"stn_k-H7IT7eAe","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_iCn7zS0Hyg","source":"stn_k-H7IT7eAe","target":"stn_PWkKoGG-78","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_J9ahnBm_f0","source":"stn_PWkKoGG-78","target":"stn_CrBEZVh-FG","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_J5eVxWcR5W","source":"stn_CrBEZVh-FG","target":"stn_l_mUDYH6_P","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_lTJNayTqhL","source":"stn_kRPOnFaHx_","target":"stn_PWkKoGG-78","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_MIBxTQPd8x","source":"stn_fQTDuAomAF","target":"stn_8MYf0CijRR","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_Lo0oN57tuO","source":"stn_PUmR1FC3ka","target":"stn_kRPOnFaHx_","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_Pd6cdKwCOz","source":"stn_4-klomzJhu","target":"stn_PUmR1FC3ka","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_MZQUL_t0_W","source":"stn_4-klomzJhu","target":"stn_86IWvp0I2u","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_kfLPGIcYdi","source":"stn_T-VWzxOura","target":"stn_4-klomzJhu","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_YLoLWoQqWC","source":"stn_uR2Z_655DP","target":"stn_Ssp2pQQUKH","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_l96PM0MyO3","source":"stn_Ssp2pQQUKH","target":"stn_iT-22NVDOc","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_WV0DfdmdZj","source":"stn_86IWvp0I2u","target":"stn_iT-22NVDOc","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_qhaZ--TKxy","source":"stn_l_mUDYH6_P","target":"stn_eQ0CGcxIYT","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_GE_exWFg0H","source":"stn_Zu6q2VOkW0","target":"stn_eQ0CGcxIYT","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_WfxUwMgJdS","source":"stn_RdF6YjWgm8","target":"stn_Zu6q2VOkW0","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_Kx5tlmQXou","source":"stn_Tw1CsRAxQd","target":"stn_RdF6YjWgm8","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_635KL4Rkli","source":"stn_0oR5Seud2J","target":"stn__luPFOMBwa","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_-hZ1hA6Shn","source":"stn_0oR5Seud2J","target":"stn_CrdOYcEvwN","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_Vkda-bjLXQ","source":"stn_CrdOYcEvwN","target":"stn_Dy5F3WC6EQ","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line__RgUm_njSQ","source":"stn_dUy-2_eS-l","target":"stn_4H815PiMj1","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_GlhegI21sb","source":"stn_4H815PiMj1","target":"stn_CrdOYcEvwN","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_JtBDGHxd4p","source":"stn_dUy-2_eS-l","target":"stn_CrdOYcEvwN","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_ROUYufHMys","source":"stn_tEpSYHdsh9","target":"stn_9D1fKpW5kI","attributes":{"visible":true,"zIndex":-1,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gzmtr-virtual-int","gzmtr-virtual-int":{},"reconcileId":"","parallelIndex":-1}},{"key":"line_pZh9zYcZM9","source":"stn_oMEO0mD2Lo","target":"stn_9D1fKpW5kI","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_DKOD7Zvq95","source":"stn_Vi89JEQUX1","target":"stn_oMEO0mD2Lo","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_kwOypbBXpW","source":"stn_5eoBzmy-ql","target":"stn_tEpSYHdsh9","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_2YGjBGvbTx","source":"stn_Uo0ymOLOP0","target":"stn_9D1fKpW5kI","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_6DVxI3oZSJ","source":"stn_Uo0ymOLOP0","target":"stn_RdF6YjWgm8","attributes":{"visible":true,"zIndex":-1,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gzmtr-virtual-int","gzmtr-virtual-int":{},"reconcileId":"","parallelIndex":-1}},{"key":"line_vgqybBkC6G","source":"stn_oMEO0mD2Lo","target":"stn_JcvaNKj6Ro","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_mum2lW3H00","source":"stn_fQTDuAomAF","target":"stn_JcvaNKj6Ro","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_yVd14sfFH1","source":"stn_fQTDuAomAF","target":"stn_s5mSwu_MzM","attributes":{"visible":true,"zIndex":-1,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_HvUtLs0v6A","source":"stn_DmAmYhghxk","target":"stn_T-VWzxOura","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_6_w6yrRrMW","source":"stn_s5mSwu_MzM","target":"stn_LK0w4NCmN-","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_Z0jxpQ0L6A","source":"stn_DmAmYhghxk","target":"stn_LK0w4NCmN-","attributes":{"visible":true,"zIndex":-1,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["guangzhou","ir-gray","#515151","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_U_M-EdARsn","source":"stn_fQTDuAomAF","target":"stn_oMEO0mD2Lo","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}},{"key":"line_rRx8w8YYGn","source":"stn_fQTDuAomAF","target":"stn_DmAmYhghxk","attributes":{"visible":true,"zIndex":0,"type":"diagonal","diagonal":{"startFrom":"from","offsetFrom":0,"offsetTo":0,"roundCornerFactor":10},"style":"gd-intercity-rwy","gd-intercity-rwy":{"color":["other","other","#2559a8","#fff"]},"reconcileId":"","parallelIndex":-1}}]},"version":77}
+</script>
 
 <div class="palette-backdrop" id="paletteBackdrop" hidden>
   <div class="palette" role="dialog" aria-modal="true" aria-label="命令面板">
@@ -581,7 +603,7 @@ function parseMap(raw) {
     });
   }
 
-  // --- RMP lines.txt 方向注释：对应站名对设为单向（如 L1 柯蓝东>原山>滨港） ---
+  // --- RMP lines.txt 方向注释：对应站名对设为单向（如 L1 科蓝东>原山>滨港） ---
   if (raw.rmpSource && raw.rmpGraph && Array.isArray(raw.rmpGraph.directedPairs) && raw.rmpGraph.directedPairs.length) {
     const dp = new Set(raw.rmpGraph.directedPairs.map(p => p[0] + '\u0001' + p[1]));
     for (let i = 0; i < segments.length; i++) {
@@ -605,7 +627,7 @@ function parseMap(raw) {
     segments.push(...kept);
   }
 
-  // --- 未开通站点：排除灰色后既无乘车边也无换乘连接（用于专门提示） ---
+  // --- 未运营站点：排除灰色后既无乘车边也无换乘连接（用于专门提示） ---
   const inactiveStations = [];
   if (raw.rmpSource && raw.rmpGraph) {
     const hasRide = new Set();
@@ -666,7 +688,7 @@ function defaultColor(id) {
 
 /* 线路覆盖定义（用户提供 lines.txt）：精确划分线路，替代徽标空间聚类。
  * 每行: 线路名 站1，站2，...（方向注释）
- * 方向注释如 （柯蓝东>原山>滨港，滨港>科蓝东）→ 这些边对按单向运行 */
+ * 方向注释如 （科蓝东>原山>滨港，滨港>科蓝东）→ 这些边对按单向运行 */
 const RMP_LINES_OVERRIDE = `
 L1 滨港，锦绣川（科蓝东>原山>滨港，滨港>科蓝东）
 L2 闫千户，沿江,沿江东，西大街，东海岸，枫漓新村，枫漓新村南，河口
@@ -741,10 +763,10 @@ function mapLineNameToBadge(name, badgeNames) {
 function buildLinesFromOverride(raw, nodes, nameByKey, defs, exchangeDefs) {
   const nameToKey = new Map();
   nameByKey.forEach((v, k) => nameToKey.set(v, k));
-  // 站名容错：精确匹配优先；别名/单字差异兜底（如 lines.txt 的「柯蓝东」→ 地图「科蓝东」）
+  // 站名容错：精确匹配优先；别名/单字差异兜底（如 lines.txt 的「科蓝东」→ 地图「科蓝东」）
   const resolveKey = (nm) => {
     if (nameToKey.has(nm)) return nameToKey.get(nm);
-    if (nm === '柯蓝东') return nameToKey.get('科蓝东');
+    if (nm === '科蓝东') return nameToKey.get('科蓝东');
     for (const [k, v] of nameToKey) {
       if (v === nm) return k;
       if (Math.abs(v.length - nm.length) <= 1) {
@@ -794,7 +816,7 @@ function buildLinesFromOverride(raw, nodes, nameByKey, defs, exchangeDefs) {
         if (nm && mainKeys[mainKeys.length - 1] !== nm) mainKeys.push(nm);
       }
     }
-    // 方向注释：单向边对；每条注释路径生成独立子路由（如 柯蓝东>原山>滨港）
+    // 方向注释：单向边对；每条注释路径生成独立子路由（如 科蓝东>原山>滨港）
     for (const [a, b] of def.directedPairs) {
       const p = bfsShortestPath(adj, resolveKey(a), resolveKey(b));
       if (!p) continue;
@@ -1036,8 +1058,11 @@ function rmpToNative(raw) {
     const hex = rmpEdgeColor(a);
     if (!hex) continue;
     const q = normColor(hex) || String(hex).toLowerCase();
+    // 出闸/虚拟换乘边不属于任何线路（lineId 为空），仍须绘制（点虚线），单独标记为 virtual
+    const style = a.style || 'single-color';
+    const isVirtual = style === 'gzmtr-virtual-int' || style === 'shmetro-virtual-int';
     const lineId = edgeLine.get(e.key);
-    if (lineId === undefined) continue;
+    if (lineId === undefined && !isVirtual) continue;
     const src = nodes.get(e.source), dst = nodes.get(e.target);
     if (typeof src.x === 'number' && typeof dst.x === 'number') {
       rmpNodes[e.source] = { x: src.x, y: src.y };
@@ -1048,9 +1073,9 @@ function rmpToNative(raw) {
       zIndex: a.zIndex ?? 0,
       pathType: a.type || 'simple',
       pathAttrs: a[a.type] || {},
-      style: a.style || 'single-color',
+      style,
       color: hex,
-      lineId,
+      lineId: lineId !== undefined ? lineId : 'virtual',
     });
   }
 
@@ -2093,6 +2118,7 @@ const $ = id => document.getElementById(id);
 
 const els = {
   mapSelect: $('mapSelect'), importBtn: $('importBtn'), fileInput: $('fileInput'),
+  mapPathInput: $('mapPathInput'), pathLoadBtn: $('pathLoadBtn'),
   resetBtn: $('resetBtn'), mapName: $('mapName'),
   fromInput: $('fromInput'), toInput: $('toInput'),
   fromDropdown: $('fromDropdown'), toDropdown: $('toDropdown'),
@@ -2133,33 +2159,95 @@ function loadMap(raw) {
   return true;
 }
 
+/* 默认地图路径：默认相对页面目录；也可改为完整磁盘路径 / 根相对路径 / URL
+ * 例：'E:/迅雷下载/LanxiNavigationMap/intercitymap_ver20260807.json'、'/maps/a.json'、'https://…' */
+const DEFAULT_MAP_PATH = 'intercitymap_ver20260807.json';
+
+/* 把用户输入的路径解析为可 fetch 的 URL：
+ * - http/https → 原样
+ * - Windows 绝对路径（E:\… 或 E:/…）→ file:///E:/…
+ * - UNC（\\server\share）→ file://server/share
+ * - 其余（/根相对、相对路径）→ 相对页面解析 */
+function resolveMapUrl(p) {
+  p = (p || '').trim();
+  if (!p) return null;
+  if (/^https?:\/\//i.test(p)) return p;
+  if (/^[a-zA-Z]:[\\/]/.test(p)) return 'file:///' + p.replace(/\\/g, '/');
+  if (p.startsWith('\\\\')) return 'file://' + p.replace(/\\/g, '/');
+  return p;
+}
+
+/* 通过路径/URL 加载地图（支持根文件路径、根相对路径、http(s) 链接） */
+async function loadMapFromPath(p) {
+  const url = resolveMapUrl(p);
+  if (!url) { setStatus('⚠️ 请输入地图文件路径或 URL', '#d97706'); return; }
+  try {
+    setStatus('⏳ 正在加载：' + p + ' …', '#2563eb');
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const raw = JSON.parse(await res.text());
+    if (!loadMap(raw)) return;
+    // 追加到下拉，方便切换回默认地图
+    const opt = document.createElement('option');
+    opt.value = 'custom';
+    opt.textContent = (raw.name || p) + '（路径加载）';
+    els.mapSelect.appendChild(opt);
+    els.mapSelect.value = 'custom';
+  } catch (err) {
+    // file:// 协议下浏览器会拦截 fetch 本地文件（CORS），给出可操作的提示
+    const isFilePage = location.protocol === 'file:';
+    const hint = isFilePage
+      ? '浏览器禁止 file:// 页面读取本地文件，请改用「导入地图文件」选择器，或通过本地服务器访问'
+      : '请检查路径/URL 是否正确';
+    setStatus('❌ 无法加载「' + p + '」：' + err.message + '（' + hint + '）', '#dc2626');
+  }
+}
+
+els.pathLoadBtn.addEventListener('click', () => loadMapFromPath(els.mapPathInput.value));
+els.mapPathInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); loadMapFromPath(els.mapPathInput.value); }
+});
+
+/* 读取内嵌地图数据（file:// 直开时 fetch 被浏览器拦截，回退用内嵌副本） */
+function readEmbeddedMap() {
+  const el = document.getElementById('embedded-map');
+  if (!el) return null;
+  const t = (el.textContent || '').trim();
+  if (!t) return null;
+  try { return JSON.parse(t); } catch (e) { return null; }
+}
+
 async function populateMapSelect() {
   els.mapSelect.innerHTML = '';
-  // 默认加载根目录地图文件 intercitymap_ver20260807.json
+  let raw = null;
+  // 1) 优先尝试 fetch（本地服务 / 允许 file 协议的环境可获取磁盘上的最新文件）
   try {
-    const res = await fetch('intercitymap_ver20260807.json');
-    if (res.ok) {
-      const raw = JSON.parse(await res.text());
-      if (loadMap(raw)) {
-        const opt = document.createElement('option');
-        opt.value = '__default__';
-        opt.textContent = raw.name || 'intercitymap_ver20260807.json';
-        els.mapSelect.appendChild(opt);
-        els.mapSelect.value = '__default__';
-        setStatus('✅ 已加载默认地图「' + (raw.name || 'intercitymap') + '」', '#16a34a');
-        return;
-      }
-    }
-  } catch (err) { /* 忽略加载失败 */ }
-  setStatus('⚠️ 未能自动加载默认地图，请点击「导入地图文件」手动导入', '#d97706');
+    const res = await fetch(resolveMapUrl(DEFAULT_MAP_PATH) || DEFAULT_MAP_PATH);
+    if (res.ok) raw = JSON.parse(await res.text());
+  } catch (err) { /* 忽略：Edge/Chrome 的 file:// 会拦截 fetch，转入内嵌回退 */ }
+  // 2) fetch 失败 → 使用内嵌地图副本（保证任何浏览器直接打开都能加载）
+  if (!raw) raw = readEmbeddedMap();
+  if (raw && loadMap(raw)) {
+    const opt = document.createElement('option');
+    opt.value = '__default__';
+    opt.textContent = raw.name || DEFAULT_MAP_PATH;
+    els.mapSelect.appendChild(opt);
+    els.mapSelect.value = '__default__';
+    setStatus('✅ 已加载默认地图「' + (raw.name || 'intercitymap') + '」', '#16a34a');
+    return;
+  }
+  setStatus('⚠️ 未能自动加载默认地图，请使用上方路径输入框或「导入地图文件」手动加载', '#d97706');
 }
 
 els.mapSelect.addEventListener('change', async () => {
   if (els.mapSelect.value === '__default__') {
+    let raw = null;
     try {
-      const res = await fetch('intercitymap_ver20260807.json');
-      if (res.ok) loadMap(JSON.parse(await res.text()));
-    } catch (err) { /* 忽略 */ }
+      const res = await fetch(resolveMapUrl(DEFAULT_MAP_PATH) || DEFAULT_MAP_PATH);
+      if (res.ok) raw = JSON.parse(await res.text());
+    } catch (err) { /* 忽略：file:// 下回退内嵌 */ }
+    if (!raw) raw = readEmbeddedMap();
+    if (raw) loadMap(raw);
     return;
   }
   const i = Number(els.mapSelect.value);
@@ -2286,9 +2374,9 @@ function planRoute() {
   if (!result) {
     const inSt = model.inactiveStations || [];
     const sOn = inSt.indexOf(ui.start) >= 0, eOn = inSt.indexOf(ui.end) >= 0;
-    if (sOn && eOn) setStatus('❌ 起点与终点均位于未开通线路，暂无法乘车', '#dc2626');
-    else if (sOn) setStatus('❌ 起点位于未开通线路，暂无法乘车', '#dc2626');
-    else if (eOn) setStatus('❌ 终点位于未开通线路，暂无法到达', '#dc2626');
+    if (sOn && eOn) setStatus('❌ 起点与终点均位于未运营线路，暂无法乘车', '#dc2626');
+    else if (sOn) setStatus('❌ 起点位于未运营线路，暂无法乘车', '#dc2626');
+    else if (eOn) setStatus('❌ 终点位于未运营线路，暂无法到达', '#dc2626');
     else setStatus('❌ 无法找到路线（两站可能不连通）', '#dc2626');
     route = null; renderResult(null); draw();
     return;
@@ -2484,8 +2572,17 @@ canvas.addEventListener('click', (e) => {
     if (d < threshold && d < bd) { bd = d; best = sname; }
   }
   if (!best) {
-    // 点击地图空白背景：取消所有线路高亮
-    if (highlightLines.size) { highlightLines = new Set(); draw(); }
+    // 点击地图空白背景：取消线路高亮，并清空已选站点 / 选择模式
+    const hadAnything = !!(highlightLines.size || ui.start || ui.end || ui.pickMode);
+    if (highlightLines.size) highlightLines = new Set();
+    if (ui.start || ui.end || ui.pickMode) {
+      ui.start = null; ui.end = null; ui.pickMode = null;
+      els.fromInput.value = ''; els.toInput.value = '';
+      route = null; renderResult(null);
+      togglePickButtons();
+    }
+    if (hadAnything) setStatus('💡 已清空选择的站点', '#7b8a9b');
+    draw();
     return;
   }
 
@@ -2598,6 +2695,11 @@ const paletteCommands = [
   { label: '清空选择', hint: '', run: () => { els.clearBtn.click(); } },
   { label: '重置视图', hint: 'R', run: () => { els.resetBtn.click(); } },
   { label: '导入地图文件', hint: '', run: () => { els.importBtn.click(); } }
+  // 「通过路径/URL 加载地图」功能当前隐藏，代码保留；需要时取消注释即可恢复
+  /* { label: '通过路径/URL 加载地图…', hint: '', run: () => {
+    const p = window.prompt('输入地图文件路径或 URL（支持绝对路径、根相对路径、http(s) 链接）：', DEFAULT_MAP_PATH);
+    if (p && p.trim()) loadMapFromPath(p.trim());
+  } } */
 ];
 let paletteActive = 0;
 let paletteFiltered = [];
